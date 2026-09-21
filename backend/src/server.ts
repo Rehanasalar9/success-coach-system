@@ -40,14 +40,17 @@ app.use('/api/otp', otpRoutes);
 app.use('/api/student', studentRoutes);
 
 // Seed API trigger for testing environment
-app.post('/api/seed', async (req: Request, res: Response) => {
-  try {
-    await seedDatabase();
-    res.json({ success: true, message: 'Database re-seeded successfully with demo accounts' });
-  } catch (err: any) {
-    res.status(500).json({ success: false, message: 'Failed to seed database', error: err.message });
-  }
-});
+
+if (process.env.NODE_ENV !== 'production') {
+  app.post('/api/seed', async (req: Request, res: Response) => {
+    try {
+      await seedDatabase();
+      res.json({ success: true, message: 'Database re-seeded successfully' });
+    } catch (err: any) {
+      res.status(500).json({ success: false, message: 'Failed to seed database' });
+    }
+  });
+}
 
 // 404 Handler
 app.use((req: Request, res: Response) => {
